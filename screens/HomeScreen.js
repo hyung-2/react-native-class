@@ -8,7 +8,7 @@ import TodoInsert from '../components/TodoInsert'
 import TodoList from '../components/TodoList'
 import DropdownItem from '../components/DropdownItem'
 
-function HomeScreen({ navigation, caretType, setCaretType }){
+function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
   const date = new Date()
   const categories = ['자기계발', '업무', '오락', '여행', '연애', 'IT', '취미']
 
@@ -44,6 +44,7 @@ function HomeScreen({ navigation, caretType, setCaretType }){
         Keyboard.dismiss() //추가버튼 클릭시 키보드 감추기
         setTodoText('') //입력창 초기화
         category.current = '' //카테고리 초기화
+        setPickCategory('')
       }
 
       // const newTodo = {
@@ -67,12 +68,24 @@ function HomeScreen({ navigation, caretType, setCaretType }){
     console.log('카테고리:', item)
     closeDropdown()
     category.current = item
+    setPickCategory(item)
   }
 
   const handleOutSideOfMenu = () => { //드롭다운 메뉴 이외 영역 터치시 드롭다운 숨기기
     console.log('홈화면을 터치하셨습니다.')
-    console.log('터치')
     closeDropdown()
+  }
+
+  //에러텍스트 초기화시키기
+  const whatis = (event) => {
+    console.log('whatevent?', event.nativeEvent)
+    // console.log(todoText)
+    if(event.nativeEvent.target === 495){
+      if(todoText === '카테고리를 먼저 선택해주세요!' || todoText ==='중복된 할일입니다.' || todoText === '3글자 이상 입력하세요!'){
+        console.log('텍스트초기화테스트')
+        setTodoText('')
+      }
+    }
   }
 
   useEffect(() => navigation.addListener('focus', () => console.log('페이지 로딩')),[])
@@ -110,7 +123,7 @@ function HomeScreen({ navigation, caretType, setCaretType }){
   }
 
   return(
-    <SafeAreaView style={styles.block} onTouchStart={handleOutSideOfMenu}>
+    <SafeAreaView style={styles.block} onTouchStart={handleOutSideOfMenu} onTouchEnd={whatis}>
       <StatusBar backgroundColor="#a8c8ffff"></StatusBar>{/* 상태바를 안보이게 하고싶으면 추가를 안하면 됨 */}
       {caretType && //드롭다운 보여주기
       (
@@ -118,6 +131,7 @@ function HomeScreen({ navigation, caretType, setCaretType }){
         style={styles.dropdownShadow}
         onTouchStart={(e) => { //터치 시작점 설정:캡쳐링 방지
           console.log('여기를 지나침')
+          console.log(e.nativeEvent)
           e.stopPropagation() //터치 버블링 방지
         }}
         >

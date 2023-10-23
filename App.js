@@ -18,6 +18,7 @@ const Tab = createBottomTabNavigator()
 function App(){
 
   const [caretType, setCaretType] = useState(false)
+  const [pickCategory, setPickCategory] = useState('')
 
  return (
   <NavigationContainer>
@@ -34,11 +35,11 @@ function App(){
 
       <Tab.Screen 
       name="Home" 
-      children={(props) => <HomeScreen {...props} caretType={caretType} setCaretType={setCaretType}/>}
+      children={(props) => <HomeScreen {...props} caretType={caretType} setCaretType={setCaretType} setPickCategory={setPickCategory}/>}
       options={{
         title:'홈',
         tabBarIcon:({color, size}) => <Icon name="home" color={color} size={size}/>,
-        headerTitle: (props) => <DropdownCategory {...props} caretType={caretType} setCaretType={setCaretType}/>,
+        headerTitle: (props) => <DropdownCategory {...props} caretType={caretType} setCaretType={setCaretType} pickCategory={pickCategory}/>,
         headerStyle:{
           backgroundColor: '#a8c8ffff',
         },
