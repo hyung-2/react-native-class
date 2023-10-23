@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816380613780",
+    "project_id": "reactnativeclass-todolist",
+    "storage_bucket": "reactnativeclass-todolist.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816380613780:android:fb305d3901c65e6bd09081",
+        "android_client_info": {
+          "package_name": "com.learnrn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA63ZhMToIzjdlHZYIbHlO6OPfMKRsUp0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
