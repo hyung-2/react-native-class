@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { addData, getCollection, getCurrentTime } from '../apis/firebase'
+import { getToday, getTomorrow } from '../utils/time'
 import { SafeAreaView, View, Text, StyleSheet, StatusBar, Keyboard, FlatList, TouchableHightlight } from 'react-native'
 
 import DateHeader from '../components/DateHeader'
@@ -8,17 +9,24 @@ import TodoInsert from '../components/TodoInsert'
 import TodoList from '../components/TodoList'
 import DropdownItem from '../components/DropdownItem'
 
-function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
-  const date = new Date()
+function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPickCategory, todos, loading, route }){
+  // const date = new Date()
   const categories = ['자기계발', '업무', '오락', '여행', '연애', 'IT', '취미']
 
-  const [todos, setTodos] = useState([])
   const [todoText, setTodoText] = useState('')
   const [warning, setWarning] = useState(false)
-  const [loading, setLoading] = useState(true)
 
   const category = useRef('') //직접적으로 랜더링하지 않는값이고 변경되는 값이기 때문에 useRef사용
-  
+  const date = (route.params && route.params.date) ? new Date(route.params.date) : new Date()
+  const today = getToday(date) //시간제외
+  const tomorrow = getTomorrow(getToday(date))
+  const todosToday = todos.filter(todo => todo.createdAt?.toDate() >= today && todo.createdAt?.toDate() < tomorrow)
+  const todosTodayLatest = [...todosToday] //원본복사
+  todosTodayLatest.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds) //최신순 정렬
+
+  console.log('현재 선택 날짜:', date)
+  console.log('날짜비교:', date.getTime(), today.getTime() != getToday(new Date()).getTime())
+
   const onInsertTodo = async(trimedText) => {
     if(!category.current){ //카테고리를 선택하지 않은 경우
       setTodoText('카테고리를 먼저 선택해주세요!')
@@ -44,7 +52,7 @@ function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
         Keyboard.dismiss() //추가버튼 클릭시 키보드 감추기
         setTodoText('') //입력창 초기화
         category.current = '' //카테고리 초기화
-        setPickCategory('')
+        setPickCategory('') //화면에 보이는 카테고리값 초기화
       }
 
       // const newTodo = {
@@ -76,43 +84,16 @@ function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
     closeDropdown()
   }
 
-  //에러텍스트 초기화시키기
-  const whatis = (event) => {
-    console.log('whatevent?', event.nativeEvent)
-    // console.log(todoText)
-    if(event.nativeEvent.target === 495){
-      if(todoText === '카테고리를 먼저 선택해주세요!' || todoText ==='중복된 할일입니다.' || todoText === '3글자 이상 입력하세요!'){
-        console.log('텍스트초기화테스트')
-        setTodoText('')
-      }
+  //에러텍스트 초기화시키기-target이 바뀔때가 있었음 이유는 모름
+  const whatis = () => {
+    if(todoText === '카테고리를 먼저 선택해주세요!' || todoText ==='중복된 할일입니다.' || todoText === '3글자 이상 입력하세요!'){
+      console.log('텍스트초기화테스트')
+      setTodoText('')
     }
   }
 
   useEffect(() => navigation.addListener('focus', () => console.log('페이지 로딩')),[])
   useEffect(() => navigation.addListener('blur', () => console.log('페이지 벗어남')),[])
-  useEffect(() => { //할일 목록 조회
-    function onResult(querySnapshot){ //쿼리에 성공한 경우 실행할 함수 querySnapshot:할일목록중 일부가 추가/변경/삭제 될때마다 할일목록 새로 조회
-      const list = []
-      querySnapshot.forEach(doc => {
-        console.log(doc.data())
-        list.push({
-          ...doc.data(),
-          id: doc.id,
-        })
-      })
-      setTodos(list)
-
-      if(loading){
-        setLoading(false)
-      }
-    }
-
-    function onError(error){
-      console.error(`${error} occured when reading todos`)
-    }
-
-    return getCollection('todos', onResult, onError, null, {exists: true, condition: ['createdAt', 'asc']}, null)
-  },[])
 
   if(loading){ //로딩화면 
     return(
@@ -131,7 +112,7 @@ function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
         style={styles.dropdownShadow}
         onTouchStart={(e) => { //터치 시작점 설정:캡쳐링 방지
           console.log('여기를 지나침')
-          console.log(e.nativeEvent)
+          // console.log(e.nativeEvent)
           e.stopPropagation() //터치 버블링 방지
         }}
         >
@@ -149,8 +130,16 @@ function HomeScreen({ navigation, caretType, setCaretType, setPickCategory }){
         </View>
       )}
       <DateHeader date={date}></DateHeader>
-      {todos.length === 0 ? <Default/> : <TodoList todos={todos}/>}
-      <TodoInsert onInsertTodo={onInsertTodo} todoText={todoText} setTodoText={setTodoText} warning={warning} setWarning={setWarning}/>
+      {/* 해당날짜의 최신순으로 정렬된 할일 목록 */}
+      {todosTodayLatest.length === 0 ? <Default/> : <TodoList todos={todosTodayLatest} pickCategory={pickCategory}/>}
+      {/* 필터링한 할일목록의 날짜가 현재 날짜와 동일하지 않은 경우 - 입력창,추가버튼 비활성화 */}
+      <TodoInsert 
+        onInsertTodo={onInsertTodo} 
+        todoText={todoText} 
+        setTodoText={setTodoText}
+        warning={warning} setWarning={setWarning}
+        disabled={today.getTime() !== getToday(new Date()).getTime()}
+      />
     </SafeAreaView>
   )
 }

@@ -1,20 +1,42 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
-function TodoItem({ id, title, category, isDone, createdAt }){ //todo속성(props) 풀어헤치기
-  console.log('할일 생성시각: ', title, createdAt)
-  return(
-    <View style={styles.item}>
-      <View style={styles.titleMargin}>
-        <Text style={styles.title}>{title}</Text>
+function TodoItem({ id, title, category, isDone, createdAt, pickCategory }){ //todo속성(props) 풀어헤치기
+  //한국시간으로 포맷
+  const getKrTime = () => {
+    let krTime = moment(createdAt.toDate()).tz('Asia/Seoul')
+    return krTime.format('YY-MM-DD HH:mm:ss')
+  }
+  console.log('할일 생성시각: ', title, createdAt, getKrTime())
+  if(pickCategory === category){
+    return(
+      <View style={[styles.item, styles.line]}>
+        <View style={styles.titleMargin}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+        <View>
+          <Text>{category} ({isDone ? '종료':'진행중'})</Text>
+          <Text style={styles.dateText}>{createdAt && getKrTime()}</Text>
+        </View>
       </View>
-      <View>
-        <Text>{category} ({isDone ? '종료':'진행중'})</Text>
-        <Text style={styles.dateText}>{createdAt && moment(createdAt.toDate()).format('hh:mm:ss')}</Text>
+    )
+  }else if(pickCategory === '카테고리' || pickCategory == ''){
+    return(
+      <View style={[styles.item, styles.line]}>
+        <View style={styles.titleMargin}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+        <View>
+          <Text>{category} ({isDone ? '종료':'진행중'})</Text>
+          <Text style={styles.dateText}>{createdAt && getKrTime()}</Text>
+        </View>
       </View>
-    </View>
-  )
+    )
+  }
+    
+    
+
 }
 
 const styles = StyleSheet.create({
@@ -23,6 +45,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingLeft: 10,
     paddingVertical: 10,
+  },
+  line: {
+    borderBottomColor: '#ddd',
+    borderBottomWidth: 1,
   },
   titleMargin: {
     marginRight: 10
@@ -33,7 +59,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 12
-  }
+  },
 })
 
 

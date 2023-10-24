@@ -3,7 +3,7 @@ import { FlatList, View, Text, StyleSheet } from 'react-native'
 
 import TodoItem from './TodoItem'
 
-function TodoList({ todos }){
+function TodoList({ todos, pickCategory }){
   return(
     <FlatList
       data={todos}
@@ -11,7 +11,7 @@ function TodoList({ todos }){
       keyExtractor={item => item.id} //리액트의 key 역할
       ItemSeparatorComponent={() => <View style={styles.line}></View>} //아이템 사이에 구분선 추가 or 구분하는 뷰 필요할때 사용
       renderItem={({item}) => (
-        <TodoItem {...item}/>
+        <TodoItem {...item} pickCategory={pickCategory}/>
         //아이템 각각의 뷰 화면
         // <View style={styles.item}>
         //   <View style={styles.titleMargin}>
@@ -32,10 +32,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  line: {
-    backgroundColor: '#ddd',
-    height: 1,
   },
   item: {
     flexDirection: 'row',

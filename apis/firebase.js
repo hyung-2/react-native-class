@@ -14,7 +14,9 @@ export const getCollection = (collections, onResult, onError, query, order, limi
 
   //조건쿼리
   if(query && query.exists && query.condition && query.condition.length !== 0){
-    ref = ref.where(...query.condition)
+    for(let cond of query.condition){ //멀티쿼리
+      ref = ref.where(...cond)
+    }
   }
   if(order && order.exists && order.condition && order.condition.length !== 0){
     ref = ref.orderBy(...order.condition)
@@ -27,5 +29,9 @@ export const getCollection = (collections, onResult, onError, query, order, limi
 }
 
 export const getCurrentTime = () => {
-  return firestore.FieldValue.serverTimestamp()
+  return firestore.FieldValue.serverTimestamp() //파이어베이스 해당서버의 로컬시각
+}
+
+export const changeTimeFormat = (date) => { //시간 포맷 변경 (Date -> Timestamp)
+  return firestore.Timestamp.fromDate(date)
 }

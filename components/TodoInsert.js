@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, TextInput, StyleSheet, Text, TouchableOpacity, Keyboard } from 'react-native'
 
-function TodoInsert({ onInsertTodo, todoText, setTodoText, warning, setWarning }){
+function TodoInsert({ onInsertTodo, todoText, setTodoText, warning, setWarning, disabled }){
 
   const onPress = () => {
     const trimedText = todoText.trim() //공백제거
@@ -29,11 +29,13 @@ function TodoInsert({ onInsertTodo, todoText, setTodoText, warning, setWarning }
   return(
     <View style={styles.container}>
       <TextInput
-        placeholder='할일을 작성해주세요!'
-        placeholderTextColor='#a8c8ffff'
+        editable={!disabled} //disabled값에 따른 입력창 비활성화
+        selectTextOnFocus={!disabled} //disabled값에 따른 입력창 비활성화
+        placeholder={disabled ? '할일을 작성할 수 없습니다' : '할일을 작성해주세요!'}
+        placeholderTextColor={disabled ? 'red' : '#a8c8ffff'}
         selectionColor={'#d6e3ffff'} //커서색상
         style={[styles.input, { color : warning ? 'red' : '#a8c8ffff'} ]}
-        value={todoText}
+        value={disabled ? '' : todoText} //disabled값이 true인 경우 입력창 초기화
         blurOnSubmit={false} //탭키 누를때 키보드 사리지지 않게 하기
         onChangeText={handleChange} //입력창에 글자 입력시
         returnKeyType='done' //엔터키 아이콘 변경
@@ -42,10 +44,12 @@ function TodoInsert({ onInsertTodo, todoText, setTodoText, warning, setWarning }
         onSubmitEditing={hideKeyboard} //엔터키 눌렀을때 키보드 닫기
       />
       <TouchableOpacity 
+        disabled={disabled} //disabled값에 따른 버튼 비활성화
         activeOpacity={0.7} //버튼 클릭시 투명도 변경  
         onPress={onPress} //버튼 클릭시 실행
-        >
-        <View style={styles.button}>
+      >
+        {/* disabled값에 따른 버튼 색상 변경 */}
+        <View style={[styles.button, {backgroundColor: disabled ? 'red' : '#a8c8ffff'}]}>
           <Text style={styles.buttonText}>추가</Text>
         </View>
       </TouchableOpacity>
