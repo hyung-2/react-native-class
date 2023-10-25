@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { addData, getCollection, getCurrentTime } from '../apis/firebase'
+import { addData, getCollection, getCurrentTime, removeData } from '../apis/firebase'
 import { getToday, getTomorrow } from '../utils/time'
-import { SafeAreaView, View, Text, StyleSheet, StatusBar, Keyboard, FlatList, TouchableHightlight } from 'react-native'
+import { SafeAreaView, View, Text, StyleSheet, StatusBar, Keyboard, FlatList, TouchableHightlight, Modal, Pressable, Alert } from 'react-native'
 
 import DateHeader from '../components/DateHeader'
 import Default from '../components/Default'
@@ -15,6 +15,9 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
 
   const [todoText, setTodoText] = useState('')
   const [warning, setWarning] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [todoToRemove, setTodoToRemove] = useState({id: null, title: ''})
+  const [done, setDone] = useState(false)
 
   const category = useRef('') //직접적으로 랜더링하지 않는값이고 변경되는 값이기 때문에 useRef사용
   const date = (route.params && route.params.date) ? new Date(route.params.date) : new Date()
@@ -34,10 +37,6 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
       return
     }
     if(trimedText && trimedText.length > 3){ //최소 글자수 제한
-      // const nextId = todos.length + 1
-      // const todoContents = trimedText.split(',')
-      // const createdTime = new Date()
-
       if(todos.filter(todo => todo.title === trimedText).length > 0){
         setTodoText('중복된 할일입니다.')
         setWarning(true)
@@ -54,13 +53,6 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
         category.current = '' //카테고리 초기화
         setPickCategory('') //화면에 보이는 카테고리값 초기화
       }
-
-      // const newTodo = {
-      //   id: todos.length + 1,
-      //   title: todoContents[0],
-      //   category: category.current || '자기계발',
-      //   createdAt: `${createdTime.getFullYear()}-${createdTime.getMonth()+1}-${createdTime.getDate()}`
-      // }
     }else{
       console.log('3글자 이상 입력하세요!')
       setTodoText('3글자 이상 입력하세요!')
@@ -82,6 +74,22 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
   const handleOutSideOfMenu = () => { //드롭다운 메뉴 이외 영역 터치시 드롭다운 숨기기
     console.log('홈화면을 터치하셨습니다.')
     closeDropdown()
+  }
+
+  const removeTodo = (id, title) => {
+    setModalOpen(true)
+    setTodoToRemove({id, title})
+    console.log(`할일 [${title}] 제거`)
+  }
+
+  const handleRemove = () => {
+    setModalOpen(false)
+    removeData('todos', todoToRemove.id)
+  }
+
+  const reAlign = () => {
+    console.log('버튼누름ㅋㅋ', done)
+    setDone(!done)
   }
 
   //에러텍스트 초기화시키기-target이 바뀔때가 있었음 이유는 모름
@@ -106,6 +114,35 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
   return(
     <SafeAreaView style={styles.block} onTouchStart={handleOutSideOfMenu} onTouchEnd={whatis}>
       <StatusBar backgroundColor="#a8c8ffff"></StatusBar>{/* 상태바를 안보이게 하고싶으면 추가를 안하면 됨 */}
+      <Modal 
+        animationType='fade'
+        transparent={true}
+        visible={modalOpen}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.')
+          setModalOpen(!modalOpen)
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.guideText}>할일 "{todoToRemove.title}" 을 제거하시겠습니까?</Text>
+            <View style={styles.alignHorizontal}>
+              <Pressable
+                style={[styles.button, styles.buttonClose, styles.remove]}  
+                onPress={handleRemove}
+              >
+                <Text style={styles.textStyle}>삭제</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}  
+                onPress={() => setModalOpen(false)}
+              >
+                <Text style={styles.textStyle}>닫기</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       {caretType && //드롭다운 보여주기
       (
         <View 
@@ -129,9 +166,9 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
             />
         </View>
       )}
-      <DateHeader date={date}></DateHeader>
+      <DateHeader date={date} reAlign={reAlign} done={done}></DateHeader>
       {/* 해당날짜의 최신순으로 정렬된 할일 목록 */}
-      {todosTodayLatest.length === 0 ? <Default/> : <TodoList todos={todosTodayLatest} pickCategory={pickCategory}/>}
+      {todosTodayLatest.length === 0 ? <Default/> : <TodoList todos={todosTodayLatest} pickCategory={pickCategory} removeTodo={removeTodo} done={done}/>}
       {/* 필터링한 할일목록의 날짜가 현재 날짜와 동일하지 않은 경우 - 입력창,추가버튼 비활성화 */}
       <TodoInsert 
         onInsertTodo={onInsertTodo} 
@@ -162,7 +199,64 @@ const styles = StyleSheet.create({
     top: -15,
     borderRadius: 5,
     margin: 15
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 50,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  alignHorizontal: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  guideText: {
+    fontWeight: 'bold',
+    fontSize: 15
+  },
+  button: {
+    width: 70,
+    height: 40,
+    borderRadius: 10,
+    padding: 0,
+    elevation: 2,
+    marginTop: 30,
+    marginRight: 5,
+    justifyContent: 'center',
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#a8c8ffff',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  remove: {
+    backgroundColor: 'red',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 })
 
 

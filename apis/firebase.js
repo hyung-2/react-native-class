@@ -9,6 +9,16 @@ export const addData = async (collections, data) => {
   console.log(`${collections} : ${JSON.stringify(data)} added in firestore!`)
 }
 
+//수정 : id값과 일치하는 도큐먼트를 파라미터로 주어진 data객체로 업데이트
+export const updateData = async (collections, id, data) => {
+  await getRef(collections).doc(id).update(data)
+}
+
+//삭제
+export const removeData = async (collections, id) => {
+  await getRef(collections).doc(id).delete()
+}
+
 export const getCollection = (collections, onResult, onError, query, order, limit) => {
   let ref = getRef(collections)
 
