@@ -13,3 +13,8 @@ export const getDayWithoutTime = (date) => {
   const day = date.getDate()
   return { year, month, day }
 }
+
+export const getFullCalendar = (time) => {
+  const {year, month, day: date} = getDayWithoutTime(time)
+  return {year, month, date, day: time.getDay()}
+}
