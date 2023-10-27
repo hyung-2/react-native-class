@@ -101,7 +101,10 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
   }
 
   useEffect(() => navigation.addListener('focus', () => console.log('페이지 로딩')),[])
-  useEffect(() => navigation.addListener('blur', () => console.log('페이지 벗어남')),[])
+  useEffect(() => navigation.addListener('blur', () => {
+    console.log('페이지 벗어남')
+    setPickCategory('')
+  }),[])
 
   if(loading){ //로딩화면 
     return(

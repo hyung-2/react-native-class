@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
 import HomeScreen from './screens/HomeScreen';
 import CalendarScreen from './screens/CalendarScreen';
@@ -25,6 +26,10 @@ function App(){
   const [loading, setLoading] = useState(true) //할일목록 상태
   const [yearCaret, setYearCaret] = useState(false)
   const [monthCaret, setMonthCaret] = useState(false)
+  const [pickYear, setPickYear] = useState('')
+  const [pickMonth, setPickMonth] = useState('')
+
+  console.log('어디서안들어오는가-',pickYear, pickMonth, )
 
   useEffect(() => { //할일목록 조회
     function onResult(querySnapshot){
@@ -42,6 +47,7 @@ function App(){
     return getCollection('todos', onResult, onError, null, null, null)
   },[])
 
+
  return (
   <NavigationContainer>
     <Tab.Navigator initialRouteName = "Home" screenOptions={{
@@ -50,66 +56,84 @@ function App(){
           backgroundColor: '#ffffff'
         }
       }}>
-      {/* <Tab.Screen name="Home" component={HomeScreen} options={{
-        title:'홈',
-        tabBarIcon:({color, size}) => <Icon name="home" color={color} size={size}/>
-      }}></Tab.Screen> */}
-
-      <Tab.Screen 
-      name="Home" 
-      children={(props) => 
-        <HomeScreen 
-          {...props} 
-          caretType={caretType} setCaretType={setCaretType} 
-          pickCategory={pickCategory} setPickCategory={setPickCategory} 
-          todos={todos} loading={loading}/>
-      }
-      options={{
-        title:'홈',
-        tabBarIcon:({color, size}) => <Icon name="home" color={color} size={size}/>,
-        headerTitle: (props) => <DropdownCategory {...props} caretType={caretType} setCaretType={setCaretType} pickCategory={pickCategory} setPickCategory={setPickCategory} categoryTitle='카테고리'/>,
-        headerStyle:{
-          backgroundColor: '#a8c8ffff',
-        },
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          color: '#fff',
-        }
-      }}/>
+        <Tab.Screen
+          name="Home"
+          children={(props) =>
+            <HomeScreen
+              {...props}
+              caretType={caretType} setCaretType={setCaretType}
+              pickCategory={pickCategory} setPickCategory={setPickCategory}
+              todos={todos} loading={loading}
+            />
+          }
+          options={{
+            title:'홈',
+            tabBarIcon:({color, size}) => <Icon name="home" color={color} size={size}/>,
+            headerTitle: (props) => <DropdownCategory {...props} caretType={caretType} setCaretType={setCaretType} pickCategory={pickCategory} setPickCategory={setPickCategory} categoryTitle='카테고리'/>,
+            // categoryTitle을 주어 DropdownCategory컴포넌트 재활용
+            headerStyle:{
+              backgroundColor: '#a8c8ffff',
+            },
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              color: '#fff',
+            }
+          }}
+        />
       <Tab.Screen 
         name="Calendar" 
         children={(props) => 
           <CalendarScreen
             {...props}
             yearCaret={yearCaret} setYearCaret={setYearCaret}
-            monthCaret={monthCaret} setMonthCaret={setMonthCaret}/>
+            monthCaret={monthCaret} setMonthCaret={setMonthCaret}
+            pickYear={pickYear} setPickYear={setPickYear}
+            pickMonth={pickMonth} setPickMonth={setPickMonth}
+          />
         }
         options={{
-        title:'달력',
-        tabBarIcon: ({color, size}) => <Icon name='calendar-month' color={color} size={size}/>,
-        headerTitle: (props) => (
-          <View style={{flexDirection: 'row'}}>
-            <DropdownCategory {...props} caretType={yearCaret} setCaretType={setYearCaret} categoryTitle='Year'/>
-            <DropdownCategory {...props} caretType={monthCaret} setCaretType={setMonthCaret} categoryTitle='Month'/>
-          </View>
-        ),
-        headerStyle:{
-          backgroundColor: '#a8c8ffff',
-        },
-        headerTitleStyle:{
-          fontWeight: 'bold',
-          color: '#fff'
+          title:'달력',
+          tabBarIcon: ({color, size}) => <Icon name='calendar-month' color={color} size={size}/>,
+          headerTitle: (props) => (
+            <View style={{flexDirection: 'row'}}>
+              <DropdownCategory {...props} caretType={yearCaret} setCaretType={setYearCaret} pickYear={pickYear} setPickYear={setPickYear} categoryTitle='년'/>
+              <DropdownCategory {...props} caretType={monthCaret} setCaretType={setMonthCaret} pickMonth={pickMonth} setPickMonth={setPickMonth} categoryTitle='월'/>
+            </View>
+          ),
+          headerStyle:{
+            backgroundColor: '#a8c8ffff',
+          },
+          headerTitleStyle:{
+            fontWeight: 'bold',
+            color: '#fff'
+          }
+        }}
+      />
+      <Tab.Screen 
+        name="DashBoard" 
+        children={(props) => 
+          <DashBoardScreen todos={todos}/>
         }
-      }}
-      ></Tab.Screen>
-      <Tab.Screen name="DashBoard" component={DashBoardScreen} options={{
-        title:'통계',
-        tabBarIcon: ({color, size}) => <Icon name='dashboard' color={color} size={size}/>
-      }}></Tab.Screen>
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{
-        title:'설정',
-        tabBarIcon: ({color, size}) => <Icon name='settings' color={color} size={size}/>
-      }}></Tab.Screen>
+        options={{
+          title:'통계',
+          tabBarIcon: ({color, size}) => <Icon name='dashboard' color={color} size={size}/>,
+          headerStyle:{
+            backgroundColor: '#a8c8ffff'
+          },
+          headerTitleStyle:{
+            fontWeight: 'bold',
+            color: '#666'
+          },
+        }}
+      />
+      <Tab.Screen 
+        name="Settings" 
+        component={SettingsScreen} 
+        options={{
+          title:'설정',
+          tabBarIcon: ({color, size}) => <Icon name='settings' color={color} size={size}/>
+        }}
+      />
     </Tab.Navigator>
   </NavigationContainer>
  )

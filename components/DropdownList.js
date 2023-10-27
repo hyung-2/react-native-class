@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Dimensions } from 'react-native'
 
 import DropdownItem from './DropdownItem'
 
-function DropdownList({ categories, selectCategory, top, left, rate=1 }){
+function DropdownList({ categories, selectCategory, top, left, rate=1, selectedYear, selectedMonth }){
   //rate는 전체화면 높이에서 드롭다운메뉴의 최대높이를 얼마만큼의 비율로 설정할지 정해줌
   return(
     <View 
@@ -11,6 +11,7 @@ function DropdownList({ categories, selectCategory, top, left, rate=1 }){
       onTouchStart = {(e) => { //터치 시작점 설정 : 캡쳐링 방지
         console.log('여기를 지나침')
         e.stopPropagation() //터치 버블링 방지
+        console.log(selectedYear, selectedMonth)
         }}
     >
       <FlatList

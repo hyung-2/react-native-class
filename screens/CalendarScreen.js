@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { SafeAreaView, View, Text, StyleSheet, StatusBar, Button, FlatList, Dimensions, TouchableWithoutFeedback } from 'react-native'
 import { getFullCalendar } from '../utils/time'
 
 import DropdownList from '../components/DropdownList'
 
-function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMonthCaret}){
+function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMonthCaret, pickYear, setPickYear, pickMonth, setPickMonth}){
 
   const today = getFullCalendar(new Date())
   const week = ['일', '월', '화', '수', '목', '금', '토'] 
@@ -45,10 +45,13 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
   const selectCategory = (item, e) => { //드롭다운으로 날짜 선택시
     console.log('날짜:', item )
     const lastChr = item[item.legnth-1]
+    console.log(lastChr)
     if(lastChr === '년'){
       setSelectedYear(parseInt(item))
+      setPickYear(item)
     }else if(lastChr === '월'){
       setSelectedMonth(parseInt(item))
+      setPickMonth(selectedMonth)
     }
     closeDropdown()
   }
@@ -132,13 +135,16 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
 const styles = StyleSheet.create({
   block:{
     flex:1,
+    backgroundColor: '#a8c8ffff',
   },
   calendarContainer: {
     width: Dimensions.get('window').width * 0.9, //80%
-    backgroundColor: '#777',
+    backgroundColor: '#bbb',
     marginTop: 20,
     marginLeft: 'auto',
     marginRight: 'auto',
+    borderWidth: 1,
+    borderColor: '#777'
   },
   calendarHeader: {
     flexDirection: 'row'
@@ -154,10 +160,10 @@ const styles = StyleSheet.create({
   },
   day: {
     backgroundColor: '#fff',
-    margin: .2,
+    margin: .7,
     flex: 1, //7칸 균등분배
     alignItems: 'center',
-    padding: 3,
+    padding: 10,
   },
   today: {backgroundColor: '#a8c8ffff'},
   weekday: {color: '#333'},
