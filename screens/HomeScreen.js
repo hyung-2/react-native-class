@@ -150,11 +150,11 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
       <DropdownList categories={categories} selectCategory={selectCategory} top={-15}/>}
       <DateHeader date={date} reAlign={reAlign} done={done}></DateHeader>
       {/* 해당날짜의 최신순으로 정렬된 할일 목록 */}
-      {todosTodayLatest.length === 0 ? <Default/> : <TodoList todos={todosTodayLatest} pickCategory={pickCategory} removeTodo={removeTodo} done={done}/>}
+      {todosTodayLatest.length === 0 ? <Default/> : <TodoList todos={todosTodayLatest} pickCategory={pickCategory} removeTodo={removeTodo} done={done} handleRemove={handleRemove}/>}
       {/* 필터링한 할일목록의 날짜가 현재 날짜와 동일하지 않은 경우 - 입력창,추가버튼 비활성화 */}
-      <TodoInsert 
-        onInsertTodo={onInsertTodo} 
-        todoText={todoText} 
+      <TodoInsert
+        onInsertTodo={onInsertTodo}
+        todoText={todoText}
         setTodoText={setTodoText}
         warning={warning} setWarning={setWarning}
         disabled={today.getTime() < getToday(new Date()).getTime()}

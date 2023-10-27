@@ -1,10 +1,13 @@
 import React from 'react'
 import { View, FlatList, StyleSheet, Dimensions } from 'react-native'
+import { SwipeListView } from 'react-native-swipe-list-view'
 
 import DropdownItem from './DropdownItem'
 
 function DropdownList({ categories, selectCategory, top, left, rate=1, selectedYear, selectedMonth }){
   //rate는 전체화면 높이에서 드롭다운메뉴의 최대높이를 얼마만큼의 비율로 설정할지 정해줌
+
+
   return(
     <View 
       style={[styles.dropdownShadow, {top, left, maxHeight: Dimensions.get('window').height * rate}]}  
@@ -44,6 +47,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 15
   },
+  rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#ddd',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 15,
+    height: 0,
+  },
+  deleteBtn: {
+    backgroundColor: '#F194FF',
+    right: 0,
+    height: '100%',
+  }
 })
 
 

@@ -47,6 +47,13 @@ function App(){
     return getCollection('todos', onResult, onError, null, null, null)
   },[])
 
+  const onSwipeLeft = (gestureState) => {
+    console.log('왼쪽ㅇㅇ')
+  }
+
+  const onSwipeRight = (gestureState) => {
+    console.log('오른쪽ㅇㅇ')
+  }
 
  return (
   <NavigationContainer>

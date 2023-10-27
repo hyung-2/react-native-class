@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingLeft: 10,
     paddingVertical: 10,
+    backgroundColor: '#fff'
   },
   line: {
     borderBottomColor: '#ddd',
