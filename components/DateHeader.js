@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#a8c8ffff',
     flexDirection: 'row',
+    elevation: 2,
   },
   dateText: {
     fontSize: 30,

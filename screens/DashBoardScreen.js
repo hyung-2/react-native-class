@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 20,
     backgroundColor: '#ffffff',
+    elevation: 2,
   },
   itemBg: { //진행상태가 보이는 부분 배경
     margin: 10,
