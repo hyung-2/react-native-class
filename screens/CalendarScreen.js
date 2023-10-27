@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { SafeAreaView, View, Text, StyleSheet, StatusBar, Button, FlatList, Dimensions, TouchableWithoutFeedback } from 'react-native'
+import { SafeAreaView, View, Text, StyleSheet, StatusBar, Button, FlatList, Dimensions, TouchableWithoutFeedback, Pressable } from 'react-native'
 import { getFullCalendar } from '../utils/time'
 
 import DropdownList from '../components/DropdownList'
@@ -71,6 +71,11 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
     navigation.navigate('Home', {date: `${selectedYear}-${selectedMonth}-${selectedDate}`})
   }
 
+  //오늘 할일 보기
+  const todayTodo = () => {
+    navigation.navigate('Home', {date: `${today.year}-${today.month}-${today.date}`})
+  }
+
   return(
     <SafeAreaView style={styles.block} onTouchStart={handleOutSideOfMenu}>
       <StatusBar backgroundColor="#a8c8ffff"></StatusBar>{/* 상태바를 안보이게 하고싶으면 추가를 안하면 됨 */}
@@ -128,6 +133,9 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
           contentContainerStyle={{justifyContent: 'flex-start'}}
         />
       </View>
+      <Pressable style={styles.todayButton} onPress={todayTodo}>
+      <Text style={styles.textStyle}>오늘 할일 보기</Text>
+      </Pressable>
     </SafeAreaView>
   )
 }
@@ -168,7 +176,24 @@ const styles = StyleSheet.create({
   today: {backgroundColor: '#a8c8ffff'},
   weekday: {color: '#333'},
   sunday: {color: '#de1738'},
-  saturday: {color: '#4169e1'}
+  saturday: {color: '#4169e1'},
+  todayButton: {
+    marginTop: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 20,
+    textAlign: 'center',
+    backgroundColor: '#fff',
+    padding: 10,
+    width: '50%',
+    borderRadius: 15,
+    fontWeight: 'bold',
+    elevation: 2,
+  }
 })
 
 
