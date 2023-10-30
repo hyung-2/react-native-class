@@ -49,8 +49,8 @@ function TodoInsert({ onInsertTodo, todoText, setTodoText, warning, setWarning, 
         onPress={onPress} //버튼 클릭시 실행
       >
         {/* disabled값에 따른 버튼 색상 변경 */}
-        <View style={[styles.button, {backgroundColor: disabled ? 'red' : '#a8c8ffff'}]}>
-          <Text style={styles.buttonText}>추가</Text>
+        <View style={[styles.button, {backgroundColor: disabled ? '#fff' : '#a8c8ffff'}]}>
+          <Text style={styles.buttonText}>{disabled ? '' : '추가'}</Text>
         </View>
       </TouchableOpacity>
     </View>
