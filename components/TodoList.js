@@ -24,10 +24,11 @@ function TodoList({ todos, pickCategory, removeTodo, done, handleRemove }){
     )
   }
 
-  const onRowDidOpen = (rowKey) => {
+  const onRowOpen = (rowKey) => {
     console.log('row open', rowKey)
     setItemKey(rowKey)
   }
+
 
   return(
     <SwipeListView
@@ -43,7 +44,7 @@ function TodoList({ todos, pickCategory, removeTodo, done, handleRemove }){
       previewRowKey={'0'}
       previewOpenValue={-40}
       previewOpenDelay={2000}
-      onRowDidOpen={onRowDidOpen}
+      onRowOpen={onRowOpen}
     />
   )
 }

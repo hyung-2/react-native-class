@@ -134,7 +134,7 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
         />
       </View>
       <Pressable style={styles.todayButton} onPress={todayTodo}>
-      <Text style={styles.textStyle}>오늘 할일 보기</Text>
+        <Text style={styles.textStyle}>오늘 할일 보기</Text>
       </Pressable>
     </SafeAreaView>
   )
@@ -143,7 +143,7 @@ function CalendarScreen({navigation, yearCaret, setYearCaret, monthCaret, setMon
 const styles = StyleSheet.create({
   block:{
     flex:1,
-    backgroundColor: '#a8c8ffff',
+    // backgroundColor: '#a8c8ffff',
   },
   calendarContainer: {
     width: Dimensions.get('window').width * 0.9, //80%
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: 20,
     textAlign: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#a8c8ffff',
     padding: 10,
     width: '50%',
     borderRadius: 15,

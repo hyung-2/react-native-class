@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native'
-// import { StatusBar } from 'expo-status-bar'
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -18,7 +17,7 @@ import { getCollection } from './apis/firebase'
 // const Stack = createNativeStackNavigator() //stack이라는 컴포넌트(모듈) 반환.객체
 const Tab = createBottomTabNavigator()
 
-function App(){
+function App({navigation}){
 
   const [caretType, setCaretType] = useState(false) //카테고리 선택유무
   const [pickCategory, setPickCategory] = useState('') //선택한 카테고리 이름 저장
@@ -28,6 +27,7 @@ function App(){
   const [monthCaret, setMonthCaret] = useState(false)
   const [pickYear, setPickYear] = useState('')
   const [pickMonth, setPickMonth] = useState('')
+  const [numOfTodosToday, setNumOfTodosToday] = useState(0)
 
   console.log('어디서안들어오는가-',pickYear, pickMonth, )
 
@@ -55,8 +55,17 @@ function App(){
     console.log('오른쪽ㅇㅇ')
   }
 
+  if(loading){
+    return(
+      <View style={styles.bolck}>
+        <ActivityIndicator size='large' color='#0047AB'/>
+        <Text style={styles.loadingText}>Loading ...</Text>
+      </View>
+    )
+  }
+
  return (
-  <NavigationContainer>
+  <>
     <Tab.Navigator initialRouteName = "Home" screenOptions={{
         tabBarActiveTintColor: '#a8c8ffff', //사용자가 탭메뉴 터치했을때 액티브 색상
         tabBarStyle:{ //탭 메뉴 배경색
@@ -71,6 +80,7 @@ function App(){
               caretType={caretType} setCaretType={setCaretType}
               pickCategory={pickCategory} setPickCategory={setPickCategory}
               todos={todos} loading={loading}
+              setNumOfTodosToday={setNumOfTodosToday}
             />
           }
           options={{
@@ -84,7 +94,8 @@ function App(){
             headerTitleStyle: {
               fontWeight: 'bold',
               color: '#fff',
-            }
+            },
+            tabBarBadge: numOfTodosToday
           }}
         />
       <Tab.Screen 
@@ -138,13 +149,35 @@ function App(){
         component={SettingsScreen} 
         options={{
           title:'설정',
-          tabBarIcon: ({color, size}) => <Icon name='settings' color={color} size={size}/>
+          tabBarIcon: ({color, size}) => <Icon name='settings' color={color} size={size}/>,
+          headerStyle:{
+            backgroundColor: '#a8c8ffff'
+          },
+          headerTitleStyle:{
+            fontWeight: 'bold',
+            color: '#666'
+          },
         }}
       />
     </Tab.Navigator>
-  </NavigationContainer>
+  </>
  )
 }
 
+const styles = StyleSheet.create({
+  bolck:{
+    flex: 1,
+    backgroundColor: '#a8c8ffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 10,
+    textAlign: 'center'
+  }
+})
 
 export default App;

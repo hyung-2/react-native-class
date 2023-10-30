@@ -47,20 +47,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 15
   },
-  rowBack: {
-    alignItems: 'center',
-    backgroundColor: '#ddd',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 15,
-    height: 0,
-  },
-  deleteBtn: {
-    backgroundColor: '#F194FF',
-    right: 0,
-    height: '100%',
-  }
 })
 
 

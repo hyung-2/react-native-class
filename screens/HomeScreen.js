@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { addData, getCollection, getCurrentTime, removeData } from '../apis/firebase'
-import { getToday, getTomorrow } from '../utils/time'
+import { addData, getCurrentTime, removeData } from '../apis/firebase'
+import { getToday, getTomorrow, getTodosToday } from '../utils/time'
 import { SafeAreaView, View, Text, StyleSheet, StatusBar, Keyboard, FlatList, TouchableHightlight, Modal, Pressable, Alert } from 'react-native'
 
 import DateHeader from '../components/DateHeader'
@@ -9,7 +9,7 @@ import TodoInsert from '../components/TodoInsert'
 import TodoList from '../components/TodoList'
 import DropdownList from '../components/DropdownList'
 
-function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPickCategory, todos, loading, route }){
+function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPickCategory, todos, loading, route, setNumOfTodosToday }){
   // const date = new Date()
   const categories = ['자기계발', '업무', '오락', '여행', '연애', 'IT', '취미']
 
@@ -21,9 +21,7 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
 
   const category = useRef('') //직접적으로 랜더링하지 않는값이고 변경되는 값이기 때문에 useRef사용
   const date = (route.params && route.params.date) ? new Date(route.params.date) : new Date()
-  const today = getToday(date) //시간제외
-  const tomorrow = getTomorrow(getToday(date))
-  const todosToday = todos.filter(todo => todo.createdAt?.toDate() >= today && todo.createdAt?.toDate() < tomorrow)
+  const { todosToday, today } = getTodosToday(date, todos)
   const todosTodayLatest = [...todosToday] //원본복사
   todosTodayLatest.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds) //최신순 정렬
 
@@ -37,7 +35,7 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
       return
     }
     if(trimedText && trimedText.length > 3){ //최소 글자수 제한
-      if(todos.filter(todo => todo.title === trimedText).length > 0){
+      if(todosToday.filter(todo => todo.title === trimedText).length > 0){
         setTodoText('중복된 할일입니다.')
         setWarning(true)
       }else{
@@ -105,14 +103,9 @@ function HomeScreen({ navigation, caretType, setCaretType, pickCategory, setPick
     console.log('페이지 벗어남')
     setPickCategory('')
   }),[])
-
-  if(loading){ //로딩화면 
-    return(
-      <View>
-        <Text>로딩중...</Text>
-      </View>
-    )
-  }
+  useEffect(() => {
+    setNumOfTodosToday(todosToday.length)
+  })
 
   return(
     <SafeAreaView style={styles.block} onTouchStart={handleOutSideOfMenu} onTouchEnd={whatis}>
